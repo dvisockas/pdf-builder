@@ -10,18 +10,26 @@
   <link rel="stylesheet" href="assets/css/bootstrap.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" rel="stylesheet">
   <title>PDF builder</title>
 </head>
 <body>
-  <h1>Build a custom pdf</h1>
-  <form>
-    <input type="file" id="fileUpload" multiple />
-    <div class="btn btn-primary" id="submit">Build</div>
-  </form>
+  <header>
+    <p>Build a custom pdf</p>
+  </header>
+  <div class="container">
+    <form>
+      <input type="file" id="fileUpload" multiple />
+      <div class="btn btn-secondary" id="build">Build</div>
+    </form>
+
+    <div id="fileList"></div>
+  </div>
 
 
   <script src="assets/js/jquery-3.3.1.min.js"></script>
   <script src="assets/js/jspdf.min.js"></script>
+  <script src="assets/js/jq-ui.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/fileUpload.js"></script>

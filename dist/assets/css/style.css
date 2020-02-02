@@ -1,0 +1,27 @@
+body {
+  font-family: 'Open Sans', sans-serif; }
+
+header {
+  width: 100%;
+  background-color: #000055;
+  color: #fff;
+  padding: 5px 10px;
+  margin-bottom: 20px;
+  font-weight: bold; }
+  header p {
+    margin: 0; }
+
+#fileList {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #f7f7f7; }
+  #fileList .listItem {
+    cursor: pointer; }
+    #fileList .listItem img {
+      max-width: 500px;
+      margin-bottom: 10px; }
+  #fileList .sortablePlaceholder {
+    width: 500px;
+    height: 280px;
+    background-color: #e0e0e0;
+    margin-bottom: 10px; }
