@@ -4,31 +4,38 @@ $(document).ready(function() {
 
   const fileUplaod = $('#fileUpload')
   fileUplaod.on('change', onUpload)
+  const compressionLevels = [
+    'NONE',
+    'FAST',
+    'MEDIUM',
+    'SLOW',
+  ]
   // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
-  // Compression values: 'NONE', 'FAST', 'MEDIUM' and 'SLOW'
 
   function buildPDF(event) {
+    const compressionValue = parseInt($('#compression').val())
+    const compression = compressionLevels[compressionValue]
+
     let doc = new jsPDF()
-    doc.setFontSize(20)
-    doc.text(35, 25, 'Hello, Manel :)')
+    // doc.setFontSize(15)
+    // doc.text(35, 25, 'Hello, Manel :)')
     let firstImage = true
 
     $('.listItem > img').each(function(i, e) {
       if (i % 2 == 1) {
-        firstImage = false 
-        if (i > 1) {
-          doc.addPage()
-        }
+        firstImage = false
       } else {
         firstImage = true
-      } 
-      
+      }
+
       const imageSrc = $(e).attr('src')
-      y = firstImage ? 30 : 150
-      doc.addImage(imageSrc, 'JPEG', 0, y, 180, 100, null, 'SLOW')
+      y = firstImage ? 0 : 150
+      doc.addImage(imageSrc, 'JPEG', 0, y, 180, 100, null, compression)
+      if (i % 2 == 1) {
+        doc.addPage()
+      }
     })
 
-    // doc.addImage(reader.currentTarget.result, 'JPEG', 15, 40, 180, 160)
     // doc.addImage(reader.currentTarget.result, 'JPEG', 15, 40, 180, 160)
     doc.save('manel.pdf')
   }
