@@ -18,11 +18,18 @@
     <p>Build a custom pdf</p>
   </header>
   <div class="container">
-    <form>
-      <input type="file" id="fileUpload" multiple />
-      <input type="range" id="compression" name="compression" min="0" max="4" step="1">
-      <label for="compression">Compression</label>
-      <div class="btn btn-secondary" id="build">Build</div>
+    <form class="row">
+      <div class="col 6">
+        <input type="file" id="fileUpload" multiple />
+      </div>
+      <div class="col 4">
+        <label for="compression">Compression</label>
+        <br>
+        <input type="range" id="compression" name="compression" min="0" max="4" step="1">
+      </div>
+      <div class="col 2">
+        <div class="btn btn-success" id="build">Build</div>
+      </div>
     </form>
 
     <div id="fileList"></div>

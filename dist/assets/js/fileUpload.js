@@ -4,13 +4,23 @@ $(document).ready(function() {
 
   const fileUplaod = $('#fileUpload')
   fileUplaod.on('change', onUpload)
+
   const compressionLevels = [
     'NONE',
     'FAST',
     'MEDIUM',
     'SLOW',
   ]
-  // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
+
+  $('#compression').on('change', function(e) {
+    let compression = $(e.target).val()
+    const compressionPercentage = parseInt(compression) * 25
+
+    localStorage.setItem('compression', compression)
+    $('label[for="compression"]').text('Compression (' + compressionPercentage + '%)')
+  })
+
+  $('#compression').val(~~localStorage.getItem('compression')).trigger('change')
 
   function buildPDF(event) {
     const compressionValue = parseInt($('#compression').val())
@@ -19,25 +29,35 @@ $(document).ready(function() {
     let doc = new jsPDF()
     // doc.setFontSize(15)
     // doc.text(35, 25, 'Hello, Manel :)')
-    let firstImage = true
 
     $('.listItem > img').each(function(i, e) {
-      if (i % 2 == 1) {
-        firstImage = false
-      } else {
-        firstImage = true
-      }
-
+      let lastImage = i % 2
+      const ratio = $(e).height() / $(e).width()
       const imageSrc = $(e).attr('src')
-      y = firstImage ? 0 : 150
-      doc.addImage(imageSrc, 'JPEG', 0, y, 180, 100, null, compression)
-      if (i % 2 == 1) {
+
+      y = lastImage ? 150 : 0
+      const width = 200
+      // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
+      doc.addImage(imageSrc, 'JPEG', 0, y, width, width * ratio, null, compression)
+
+      if (lastImage) {
         doc.addPage()
       }
+      console.log(ratio)
     })
 
-    // doc.addImage(reader.currentTarget.result, 'JPEG', 15, 40, 180, 160)
     doc.save('manel.pdf')
+  }
+
+  function toInt32(bytes) {
+    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+  }
+
+  function getDimensions(data) {
+    return {
+      width: toInt32(data.slice(16, 20)),
+      height: toInt32(data.slice(20, 24))
+    };
   }
 
   function onUpload(event) {
