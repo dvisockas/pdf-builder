@@ -4,7 +4,7 @@
   "description": "Frontend theme for BT Real Esatate App",
   "main": "index.js",
   "scripts": {
-    "sass": "node-sass -w scss/ -o dist/assets/css/"
+    "sass": "node-sass -w scss/ -o docs/assets/css/"
   },
   "author": "Brad Traversy",
   "license": "MIT",
