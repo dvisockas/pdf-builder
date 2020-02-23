@@ -1,12 +1,12 @@
 {
-  "name": "btre_theme",
+  "name": "build_pdf",
   "version": "1.0.0",
-  "description": "Frontend theme for BT Real Esatate App",
+  "description": "PDF builder",
   "main": "index.js",
   "scripts": {
     "sass": "node-sass -w scss/ -o docs/assets/css/"
   },
-  "author": "Brad Traversy",
+  "author": "Danielius Visockas",
   "license": "MIT",
   "dependencies": {
     "node-sass": "^4.9.3"

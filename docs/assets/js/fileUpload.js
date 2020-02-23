@@ -25,13 +25,21 @@ $(document).ready(function() {
   function buildPDF(event) {
     const compressionValue = parseInt($('#compression').val())
     const compression = compressionLevels[compressionValue]
+    const CARDIO_CARE_URL = '/assets/img/cardiocare.png'
+    const CARIMBO_URL = '/assets/img/carimbo.jpg'
 
     let doc = new jsPDF()
     // doc.setFontSize(15)
     // doc.text(35, 25, 'Hello, Manel :)')
-
-    $('.listItem > img').each(function(i, e) {
+    const images = $('.listItem > img')
+    images.each(function(i, e) {
+      console.log(i)
       let lastImage = i % 2
+
+      if (!lastImage) {
+        doc.addImage(CARDIO_CARE_URL, 'PNG', 0, 0, 205, 98, null, compression)
+      }
+
       const ratio = $(e).height() / $(e).width()
       const imageSrc = $(e).attr('src')
 
@@ -40,24 +48,23 @@ $(document).ready(function() {
       // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
       doc.addImage(imageSrc, 'JPEG', 0, y, width, width * ratio, null, compression)
 
-      if (lastImage) {
+      if (lastImage && (i != (images.length - 1))) {
         doc.addPage()
       }
-      console.log(ratio)
     })
 
-    doc.save('manel.pdf')
+    doc.save('composed.pdf')
   }
 
   function toInt32(bytes) {
-    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]
   }
 
   function getDimensions(data) {
     return {
       width: toInt32(data.slice(16, 20)),
       height: toInt32(data.slice(20, 24))
-    };
+    }
   }
 
   function onUpload(event) {
