@@ -23,30 +23,43 @@ $(document).ready(function() {
   $('#compression').val(~~localStorage.getItem('compression')).trigger('change')
 
   function buildPDF(event) {
+    let doc = new jsPDF()
+
+    const FONT = doc.getFontList()[0]
+    const HEADER_IMAGE = getDataUrl(document.querySelector('#helperImages > img.header'))
+    const FOOTER_IMAGE = getDataUrl(document.querySelector('#helperImages > img.footer'))
+
     const compressionValue = parseInt($('#compression').val())
     const compression = compressionLevels[compressionValue]
-    const CARDIO_CARE_URL = '/assets/img/cardiocare.png'
-    const CARIMBO_URL = '/assets/img/carimbo.jpg'
 
-    let doc = new jsPDF()
-    // doc.setFontSize(15)
     // doc.text(35, 25, 'Hello, Manel :)')
     const images = $('.listItem > img')
     images.each(function(i, e) {
-      console.log(i)
       let lastImage = i % 2
-
+      
       if (!lastImage) {
-        doc.addImage(CARDIO_CARE_URL, 'PNG', 0, 0, 205, 98, null, compression)
+        doc.addImage(HEADER_IMAGE, 'JPEG', 0, 0, 42, 20, 'HEADER', compression)
       }
-
+      
       const ratio = $(e).height() / $(e).width()
       const imageSrc = $(e).attr('src')
-
-      y = lastImage ? 150 : 0
+      
+      y = lastImage ? 155 : 25
       const width = 200
+      
       // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
-      doc.addImage(imageSrc, 'JPEG', 0, y, width, width * ratio, null, compression)
+      let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
+      doc.addImage(imageSrc, imageType, 5, y, width, width * ratio, null, compression)
+
+      if (lastImage || (i == (images.length - 1))) {
+        doc.fromHTML('<b><i>CARDIOcare</i></b>', 10, 275)
+        // doc.text('', 10, 270)
+        // doc.setFont(FONT, 'bold')
+        doc.setFontSize(9)
+        doc.setFont(FONT, 'normal')
+        doc.text('Serviço ambulatório de Cardiologia Veterinária', 11, 285)
+        doc.addImage(FOOTER_IMAGE, 'JPEG', 80, 275, 37, 17, 'FOOTER', compression)
+      }
 
       if (lastImage && (i != (images.length - 1))) {
         doc.addPage()
@@ -54,17 +67,6 @@ $(document).ready(function() {
     })
 
     doc.save('composed.pdf')
-  }
-
-  function toInt32(bytes) {
-    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]
-  }
-
-  function getDimensions(data) {
-    return {
-      width: toInt32(data.slice(16, 20)),
-      height: toInt32(data.slice(20, 24))
-    }
   }
 
   function onUpload(event) {
@@ -107,44 +109,14 @@ $(document).ready(function() {
     }
   }
 
-  // function resizedataURL(datas, wantedWidth, wantedHeight) {
-  //   return new Promise(async function (resolve, reject) {
-
-  //     // We create an image to receive the Data URI
-  //     let img = document.createElement('img')
-
-  //     // When the event "onload" is triggered we can resize the image.
-  //     img.onload = function () {
-  //       // We create a canvas and get its context.
-  //       let canvas = document.createElement('canvas')
-  //       let ctx = canvas.getContext('2d')
-
-  //       // We set the dimensions at the wanted size.
-  //       canvas.width = wantedWidth
-  //       canvas.height = wantedHeight
-
-  //       // We resize the image with the canvas method drawImage()
-  //       ctx.drawImage(this, 0, 0, wantedWidth, wantedHeight)
-
-  //       let dataURI = canvas.toDataURL()
-
-  //       // This is the return of the Promise
-  //       resolve(dataURI)
-  //     }
-
-  //     // We put the Data URI in the image's src attribute
-  //     img.src = datas
-
-  //   })
-  // }
-
-  function getImageDimensions(file) {
-    return new Promise(function (resolved, rejected) {
-      let image = new Image()
-      image.onload = function () {
-        resolved({ w: i.width, h: i.height })
-      }
-      i.src = file
-    })
+  function getDataUrl(img) {
+    var canvas = document.createElement('canvas')
+    var ctx = canvas.getContext('2d')
+  
+    canvas.width = img.width
+    canvas.height = img.height
+    ctx.drawImage(img, 0, 0)
+  
+    return canvas.toDataURL()
   }
 })
