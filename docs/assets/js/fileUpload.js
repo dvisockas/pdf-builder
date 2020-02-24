@@ -43,8 +43,8 @@ $(document).ready(function() {
       const ratio = $(e).height() / $(e).width()
       const imageSrc = $(e).attr('src')
 
-      y = lastImage ? 145 : 25
-      const width = 190
+      y = lastImage ? 147 : 22
+      const width = 185
 
       let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
       doc.addImage(imageSrc, imageType, 10, y, width, width * ratio, null, compression)
@@ -56,7 +56,7 @@ $(document).ready(function() {
         doc.setFont(FONT, 'normal')
         doc.text('Serviço ambulatório de Cardiologia Veterinária', 11, 285)
 
-        doc.addImage(FOOTER_IMAGE, 'JPEG', 80, 275, 37, 17, 'FOOTER', compression)
+        doc.addImage(FOOTER_IMAGE, 'JPEG', 80, 275, 36.85, 17.5, 'FOOTER', compression)
       }
 
       if (lastImage && (i != (images.length - 1))) {
@@ -107,7 +107,7 @@ $(document).ready(function() {
     window.fileCount -= 1
     if (window.fileCount == 0) {
       fileList.find('.listItem').sort(function (a, b) {
-        return parseInt(b.dataset.lastModified) - parseInt(a.dataset.lastModified)
+        return parseInt(a.dataset.lastModified) - parseInt(b.dataset.lastModified)
       }).appendTo(fileList)
 
       fileList.sortable({
