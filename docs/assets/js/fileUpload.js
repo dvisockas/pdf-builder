@@ -44,10 +44,10 @@ $(document).ready(function() {
       const imageSrc = $(e).attr('src')
 
       y = lastImage ? 147 : 22
-      const width = 185
+      const width = 178
 
       let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
-      doc.addImage(imageSrc, imageType, 10, y, width, width * ratio, null, compression)
+      doc.addImage(imageSrc, imageType, 15, y, width, width * ratio, null, compression)
 
       if (lastImage || (i == (images.length - 1))) {
         doc.fromHTML('<b><i>CARDIOcare</i></b>', 10, 275)
@@ -86,28 +86,27 @@ $(document).ready(function() {
       let fileReader = new FileReader()
       fileReader.onloadend = (function (file) {
         return function (reader) {
-          addFile(reader.currentTarget.result, file.lastModified)
+          addFile(reader.currentTarget.result, file)
         }
       })(files[i]);
       fileReader.readAsDataURL(files[i])
     }
   }
 
-  function addFile(uri, lastModified) {
+  function addFile(uri, file) {
     const fileList = $('#fileList')
     let div = document.createElement('div')
-    div.dataset.lastModified = lastModified
+    div.dataset.fileName = file.name
     let wrapper = $(div)
     wrapper.addClass('listItem')
     let img = $(document.createElement('img'))
     img.attr('src', uri)
     wrapper.append(img)
     fileList.append(wrapper)
-    wrapper.data('lastModified', 'lasasassa')
     window.fileCount -= 1
     if (window.fileCount == 0) {
       fileList.find('.listItem').sort(function (a, b) {
-        return parseInt(a.dataset.lastModified) - parseInt(b.dataset.lastModified)
+        return parseInt(a.dataset.fileName) - parseInt(b.dataset.fileName)
       }).appendTo(fileList)
 
       fileList.sortable({
