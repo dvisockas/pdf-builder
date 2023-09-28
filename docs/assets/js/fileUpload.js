@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
   const submitButton = document.getElementById('build')
   submitButton.addEventListener('click', buildPDF)
 
@@ -12,7 +12,7 @@ $(document).ready(function() {
     'SLOW',
   ]
 
-  $('#compression').on('change', function(e) {
+  $('#compression').on('change', function (e) {
     let compression = $(e.target).val()
     const compressionPercentage = parseInt(compression) * 25
 
@@ -33,7 +33,7 @@ $(document).ready(function() {
     const compression = compressionLevels[compressionValue]
 
     const images = $('.listItem > img')
-    images.each(function(i, e) {
+    images.each(function (i, e) {
       let lastImage = i % 2
 
       if (!lastImage) {
@@ -69,7 +69,7 @@ $(document).ready(function() {
 
   function onUpload(event) {
     if (typeof window.FileReader !== 'function')
-    throw ("The file API isn't supported on this browser.")
+      throw ("The file API isn't supported on this browser.")
     const fileInput = document.getElementById('fileUpload')
     let input = event.target
     if (!fileInput)
@@ -79,7 +79,7 @@ $(document).ready(function() {
     if (!fileInput.files[0])
       return undefined
 
-    let files = Array.from(fileInput.files)
+    let files = Array.from(fileInput.files).sort(file => file.name)
     window.fileCount = files.length
 
     for (let i = 0; i < files.length; i++) {
