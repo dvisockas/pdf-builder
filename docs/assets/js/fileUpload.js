@@ -79,7 +79,7 @@ $(document).ready(function () {
     if (!fileInput.files[0])
       return undefined
 
-    let files = Array.from(fileInput.files).sort(file => file.name)
+    let files = Array.from(fileInput.files)
     window.fileCount = files.length
 
     for (let i = 0; i < files.length; i++) {
