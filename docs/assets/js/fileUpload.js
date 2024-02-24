@@ -1,10 +1,4 @@
-$(document).ready(function () {
-  const submitButton = document.getElementById('build')
-  submitButton.addEventListener('click', buildPDF)
-
-  const fileUplaod = $('#fileUpload')
-  fileUplaod.on('change', onUpload)
-
+$(document).ready(() => {
   const compressionLevels = [
     'NONE',
     'FAST',
@@ -12,7 +6,7 @@ $(document).ready(function () {
     'SLOW',
   ]
 
-  $('#compression').on('change', function (e) {
+  $('#compression').on('change', (e) => {
     let compression = $(e.target).val()
     const compressionPercentage = parseInt(compression) * 25
 
@@ -22,7 +16,8 @@ $(document).ready(function () {
 
   $('#compression').val(~~localStorage.getItem('compression')).trigger('change')
 
-  function buildPDF(event) {
+  const buildPDF = (event) => {
+    const buildButton = event.target
     let doc = new jsPDF()
 
     const FONT = doc.getFontList()[0]
@@ -33,21 +28,29 @@ $(document).ready(function () {
     const compression = compressionLevels[compressionValue]
 
     const images = $('.listItem > img')
-    images.each(function (i, e) {
+
+    buildButton.innerText = 'Building...'
+
+    images.each((i, e) => {
+      console.log('adding image')
+      buildButton.innerText = `Building... (${i + 1}/${window.immutableFileCount})`
       let lastImage = i % 2
 
       if (!lastImage) {
         doc.addImage(HEADER_IMAGE, 'JPEG', 0, 0, 42, 20, 'HEADER', compression)
       }
 
-      const ratio = $(e).height() / $(e).width()
+      const width = $(e).width()
+      const height = $(e).height()
+      const ratio = height / width
       const imageSrc = $(e).attr('src')
 
+      const resizedSrc = resize(e, e.naturalHeight, e.naturalWidth)
       y = lastImage ? 147 : 22
-      const width = 178
+      const presentmentWidth = 178
 
       let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
-      doc.addImage(imageSrc, imageType, 15, y, width, width * ratio, null, compression)
+      doc.addImage(resizedSrc, imageType, 15, y, presentmentWidth, presentmentWidth * ratio, null, compression)
 
       if (lastImage || (i == (images.length - 1))) {
         doc.fromHTML('<b><i>CARDIOcare</i></b>', 10, 275)
@@ -67,7 +70,10 @@ $(document).ready(function () {
     doc.save('composed.pdf')
   }
 
-  function onUpload(event) {
+  const submitButton = document.getElementById('build')
+  submitButton.addEventListener('click', buildPDF)
+
+  const onUpload = (event) => {
     if (typeof window.FileReader !== 'function')
       throw ("The file API isn't supported on this browser.")
     const fileInput = document.getElementById('fileUpload')
@@ -81,11 +87,12 @@ $(document).ready(function () {
 
     let files = Array.from(fileInput.files)
     window.fileCount = files.length
+    window.immutableFileCount = files.length
 
     for (let i = 0; i < files.length; i++) {
       let fileReader = new FileReader()
-      fileReader.onloadend = (function (file) {
-        return function (reader) {
+      fileReader.onloadend = ((file) => {
+        return (reader) => {
           addFile(reader.currentTarget.result, file)
         }
       })(files[i]);
@@ -93,7 +100,10 @@ $(document).ready(function () {
     }
   }
 
-  function addFile(uri, file) {
+  const fileUplaod = $('#fileUpload')
+  fileUplaod.on('change', onUpload)
+
+  const addFile = (uri, file) => {
     const fileList = $('#fileList')
     let div = document.createElement('div')
     div.dataset.fileName = file.name
@@ -105,7 +115,7 @@ $(document).ready(function () {
     fileList.append(wrapper)
     window.fileCount -= 1
     if (window.fileCount == 0) {
-      fileList.find('.listItem').sort(function (a, b) {
+      fileList.find('.listItem').sort((a, b) => {
         return parseInt(a.dataset.fileName) - parseInt(b.dataset.fileName)
       }).appendTo(fileList)
 
@@ -115,14 +125,31 @@ $(document).ready(function () {
     }
   }
 
-  function getDataUrl(img) {
-    var canvas = document.createElement('canvas')
-    var ctx = canvas.getContext('2d')
+  const getDataUrl = (img) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
 
     canvas.width = img.width
     canvas.height = img.height
     ctx.drawImage(img, 0, 0)
 
     return canvas.toDataURL()
+  }
+
+  const resize = (src, height, width) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    const maxWidth = 1600
+    const targetWidth = width > maxWidth ? maxWidth : width
+    const targetHeight = height * (targetWidth / width)
+
+
+    canvas.width = targetWidth
+    canvas.height = targetHeight
+
+    ctx.drawImage(src, 0, 0, width, height, 0, 0, canvas.width, canvas.height)
+
+    return canvas.toDataURL();
   }
 })
