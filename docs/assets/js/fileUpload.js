@@ -85,7 +85,7 @@ $(document).ready(() => {
     if (!fileInput.files[0])
       return undefined
 
-    let files = Array.from(fileInput.files)
+    const files = Array.from(fileInput.files)
     window.fileCount = files.length
     window.immutableFileCount = files.length
 
@@ -116,7 +116,7 @@ $(document).ready(() => {
     window.fileCount -= 1
     if (window.fileCount == 0) {
       fileList.find('.listItem').sort((a, b) => {
-        return parseInt(a.dataset.fileName) - parseInt(b.dataset.fileName)
+        return a.dataset.fileName.localeCompare(b.dataset.fileName)
       }).appendTo(fileList)
 
       fileList.sortable({
