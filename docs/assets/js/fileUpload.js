@@ -1,21 +1,4 @@
 $(document).ready(() => {
-  const compressionLevels = [
-    'NONE',
-    'FAST',
-    'MEDIUM',
-    'SLOW',
-  ]
-
-  $('#compression').on('change', (e) => {
-    let compression = $(e.target).val()
-    const compressionPercentage = parseInt(compression) * 25
-
-    localStorage.setItem('compression', compression)
-    $('label[for="compression"]').text('Compression (' + compressionPercentage + '%)')
-  })
-
-  $('#compression').val(~~localStorage.getItem('compression')).trigger('change')
-
   const buildPDF = () => {
     let doc = new jsPDF()
 
@@ -23,18 +6,17 @@ $(document).ready(() => {
     const HEADER_IMAGE = getDataUrl(document.querySelector('#helperImages > img.header'))
     const FOOTER_IMAGE = getDataUrl(document.querySelector('#helperImages > img.footer'))
 
-    const compressionValue = parseInt($('#compression').val())
-    const compression = compressionLevels[compressionValue]
+    const COMPRESSION = 'FAST'
 
     const images = $('.listItem > img')
 
     images.each((i, e) => {
-      console.log('adding image')
+      console.log('Adding image')
 
       const lastImage = i % 2
 
       if (!lastImage) {
-        doc.addImage(HEADER_IMAGE, 'JPEG', 0, 0, 42, 20, 'HEADER', compression)
+        doc.addImage(HEADER_IMAGE, 'JPEG', 0, 0, 42, 20, 'HEADER', COMPRESSION)
       }
 
       const width = $(e).width()
@@ -46,7 +28,7 @@ $(document).ready(() => {
       const presentmentWidth = 178
 
       let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
-      doc.addImage(imageSrc, imageType, 15, y, presentmentWidth, presentmentWidth * ratio, null, compression)
+      doc.addImage(imageSrc, imageType, 15, y, presentmentWidth, presentmentWidth * ratio, null, COMPRESSION)
 
       if (lastImage || (i == (images.length - 1))) {
         doc.fromHTML('<b><i>CARDIOcare</i></b>', 10, 275)
@@ -55,7 +37,7 @@ $(document).ready(() => {
         doc.setFont(FONT, 'normal')
         doc.text('Serviço ambulatório de Cardiologia Veterinária', 11, 285)
 
-        doc.addImage(FOOTER_IMAGE, 'JPEG', 80, 275, 36.85, 17.5, 'FOOTER', compression)
+        doc.addImage(FOOTER_IMAGE, 'JPEG', 80, 275, 36.85, 17.5, 'FOOTER', COMPRESSION)
       }
 
       if (lastImage && (i != (images.length - 1))) {
