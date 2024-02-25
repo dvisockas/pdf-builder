@@ -16,8 +16,7 @@ $(document).ready(() => {
 
   $('#compression').val(~~localStorage.getItem('compression')).trigger('change')
 
-  const buildPDF = (event) => {
-    const buildButton = event.target
+  const buildPDF = () => {
     let doc = new jsPDF()
 
     const FONT = doc.getFontList()[0]
@@ -29,12 +28,10 @@ $(document).ready(() => {
 
     const images = $('.listItem > img')
 
-    buildButton.innerText = 'Building...'
-
     images.each((i, e) => {
       console.log('adding image')
-      buildButton.innerText = `Building... (${i + 1}/${window.immutableFileCount})`
-      let lastImage = i % 2
+
+      const lastImage = i % 2
 
       if (!lastImage) {
         doc.addImage(HEADER_IMAGE, 'JPEG', 0, 0, 42, 20, 'HEADER', compression)
@@ -45,12 +42,11 @@ $(document).ready(() => {
       const ratio = height / width
       const imageSrc = $(e).attr('src')
 
-      const resizedSrc = resize(e, e.naturalHeight, e.naturalWidth)
       y = lastImage ? 147 : 22
       const presentmentWidth = 178
 
       let imageType = imageSrc.match(/png;base64/) ? 'PNG' : 'JPG'
-      doc.addImage(resizedSrc, imageType, 15, y, presentmentWidth, presentmentWidth * ratio, null, compression)
+      doc.addImage(imageSrc, imageType, 15, y, presentmentWidth, presentmentWidth * ratio, null, compression)
 
       if (lastImage || (i == (images.length - 1))) {
         doc.fromHTML('<b><i>CARDIOcare</i></b>', 10, 275)
@@ -70,8 +66,13 @@ $(document).ready(() => {
     doc.save('composed.pdf')
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    buildPDF(e)
+  }
+
   const submitButton = document.getElementById('build')
-  submitButton.addEventListener('click', buildPDF)
+  submitButton.addEventListener('click', handleSubmit)
 
   const onUpload = (event) => {
     if (typeof window.FileReader !== 'function')
@@ -88,12 +89,13 @@ $(document).ready(() => {
     const files = Array.from(fileInput.files)
     window.fileCount = files.length
     window.immutableFileCount = files.length
+    $('#uploading').text(`Uploading ${window.immutableFileCount} images`)
 
     for (let i = 0; i < files.length; i++) {
       let fileReader = new FileReader()
       fileReader.onloadend = ((file) => {
         return (reader) => {
-          addFile(reader.currentTarget.result, file)
+          addImage(reader.currentTarget.result, file)
         }
       })(files[i]);
       fileReader.readAsDataURL(files[i])
@@ -103,17 +105,37 @@ $(document).ready(() => {
   const fileUplaod = $('#fileUpload')
   fileUplaod.on('change', onUpload)
 
-  const addFile = (uri, file) => {
+  const addImage = (uri, file) => {
     const fileList = $('#fileList')
-    let div = document.createElement('div')
+
+    const div = document.createElement('div')
     div.dataset.fileName = file.name
-    let wrapper = $(div)
+    const wrapper = $(div)
+
     wrapper.addClass('listItem')
     let img = $(document.createElement('img'))
     img.attr('src', uri)
+
+    const tmpImage = new Image()
+
+    tmpImage.onload = () => {
+      const resizedUri = resize(tmpImage, tmpImage.naturalHeight, tmpImage.naturalWidth)
+      window.resizedCount = window.resizedCount ? window.resizedCount + 1 : 1
+      $('#uploaded').text(`Uploaded ${window.resizedCount} images`)
+      if (window.resizedCount == window.immutableFileCount) {
+        $('#build').removeClass('d-none')
+      }
+      img.attr('src', resizedUri)
+      delete tmpImage
+    }
+
+    tmpImage.src = uri;
+
     wrapper.append(img)
     fileList.append(wrapper)
+
     window.fileCount -= 1
+
     if (window.fileCount == 0) {
       fileList.find('.listItem').sort((a, b) => {
         return a.dataset.fileName.localeCompare(b.dataset.fileName)
