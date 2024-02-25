@@ -50,7 +50,11 @@ $(document).ready(() => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    buildPDF(e)
+    $('#building').text('Building PDF')
+    setTimeout(() => {
+      buildPDF(e)
+    }, 10)
+
   }
 
   const submitButton = document.getElementById('build')
